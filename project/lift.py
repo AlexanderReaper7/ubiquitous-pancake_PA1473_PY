@@ -7,6 +7,6 @@ class Command_lift:
         self.duty_limit = duty_limit
     
     def lift_up(self, robot):
-        if robot.touch_sensor == True:
+        if robot.touch_sensor.pressed() == True:
             robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, self.duty_limit)
 
