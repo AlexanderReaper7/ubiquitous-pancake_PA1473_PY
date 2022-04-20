@@ -23,7 +23,7 @@ class Command_Line_Following(Command_Base):
         self.speed = speed
         self.gain = gain
     
-    def loop(self, robot):
+    def run(self, robot):
         # Calculate the light threshold. Choose values based on your measurements.
         threshold = (self.inside + self.outside) / 2
 
@@ -37,7 +37,7 @@ class Command_Line_Following(Command_Base):
             turn_rate = self.gain * deviation
 
             # Set status
-            self.status = "deviation: " + str(deviation) + " turn_rate: " + str(turn_rate)
+            self.status = f"deviation: {deviation}, turn_rate: {turn_rate}"
 
             # Set the drive base speed and turn rate.
             robot.drivebase.drive(self.speed, turn_rate)

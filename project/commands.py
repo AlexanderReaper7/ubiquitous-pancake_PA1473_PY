@@ -1,5 +1,5 @@
 #!/usr/bin/env pybricks-micropython
-from array import array
+from collections.deque import deque
 
 from robot import Robot
 
@@ -13,13 +13,13 @@ class Command_Base:
     def run(self, robot: Robot):
         pass
 
-class Command_Queue(array): #TODO: might need to be a command base to for nesting purposes
+class Command_Queue(deque): #TODO: might need to be a command base to for nesting purposes
     """
     a first-in first-out queue of commands
     """
     def run(self, robot: Robot):
         while len(self) > 0:
-            self.pop(i=0).run(robot)
+            self.popleft().run(robot)
 
     # TODO: print function to print the queue as a tree
     # def print_queue(self):
