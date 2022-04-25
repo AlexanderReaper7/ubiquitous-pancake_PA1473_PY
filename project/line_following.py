@@ -37,7 +37,7 @@ class Command_Line_Following(Command_Base):
             turn_rate = self.gain * deviation
 
             # Set status
-            self.status = f"deviation: {deviation}, turn_rate: {turn_rate}"
+            #self.status = f"deviation: {deviation}, turn_rate: {turn_rate}"
 
             # Set the drive base speed and turn rate.
             robot.drivebase.drive(self.speed, turn_rate)

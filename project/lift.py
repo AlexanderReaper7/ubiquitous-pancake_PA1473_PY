@@ -1,7 +1,8 @@
 #!/usr/bin/env pybricks-micropython
 from robot import Robot
+from commands import *
 
-class Command_lift(Command_Base):
+class Command_Lift(Command_Base):
     def __init__(self, name="Lift", speed = 50, duty_limit = 60):
         super().__init__(name=name)
         self.speed = speed

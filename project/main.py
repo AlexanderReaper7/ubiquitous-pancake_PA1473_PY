@@ -1,8 +1,7 @@
 #!/usr/bin/env pybricks-micropython
 import sys
 import __init__
-from commands import Command_Queue, Command_Halt, Command_Lambda
-from lift import Command_Lift
+from commands import *
 from line_following import Command_Line_Following
 from robot import Robot
 
