@@ -1,5 +1,4 @@
-#!/usr/bin/env pybricks-micropython
-from collections.deque import deque
+from collections import deque
 from robot import Robot
 
 class Command_Base:
@@ -29,7 +28,7 @@ class Command_Queue(deque):
             self.popleft().run(robot)
 
     def tree(self, indent=0):
-        print(f"{"\t" * indent}{self.name}:")
+        # print(f"{"\t" * indent}{self.name}")
         for command in self:
             if isinstance(command, Command_Queue):
                 command.tree(indent=indent+1)

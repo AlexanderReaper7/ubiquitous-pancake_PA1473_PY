@@ -1,4 +1,3 @@
-#!/usr/bin/env pybricks-micropython
 from pybricks.ev3devices import Motor, ColorSensor, TouchSensor, UltrasonicSensor
 from pybricks.parameters import Port, Direction
 from pybricks.robotics import DriveBase

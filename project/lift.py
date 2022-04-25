@@ -9,5 +9,5 @@ class Command_lift(Command_Base):
     
     def run(self, robot):
         if robot.touch_sensor.pressed() == True:
-            robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, self.duty_limit)
+            robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, duty_limit=self.duty_limit)
 
