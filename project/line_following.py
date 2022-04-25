@@ -6,7 +6,7 @@ class Command_Line_Following(Command_Base):
     """
     follows a line of specified color
     """
-    def __init__(self, end_fn: function, name="Line Follow", inside=9, outside=85, speed=100, gain=1.2):
+    def __init__(self, end_fn: function, name="Line Follow", inside=9, outside=85, speed=100, gain=1.7):
         """
         Paramaters:
         end_fn: function that returns True if the command should end
