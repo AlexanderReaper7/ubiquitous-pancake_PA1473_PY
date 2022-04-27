@@ -2,6 +2,7 @@
 from collections import deque
 from robot import Robot
 from pybricks.parameters import Stop
+from pybricks.tools import wait
 
 class Command_Base:
     """
@@ -65,5 +66,22 @@ class Command_Lift(Command_Base):
         self.duty_limit = duty_limit
     
     def run(self, robot):
+        loops = 0
         if robot.touch_sensor.pressed() == True:
             robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, duty_limit=self.duty_limit)
+        else:
+            robot.lift_motor.run_target(self.speed, 35, then=Stop.HOLD, wait = True)
+            while robot.touch_sensor.pressed() == False and loops < 10:
+                robot.drivebase.straight(10)
+                loops += 1
+            robot.drivebase.stop()
+            if robot.touch_sensor.pressed() == True:
+                robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, duty_limit=self.duty_limit)
+                wait(100)
+                robot.drivebase.straight(-200)
+            else:
+                print ("Fail to pick up an elevated item")
+
+
+            
+
