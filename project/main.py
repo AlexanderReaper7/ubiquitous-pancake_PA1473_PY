@@ -13,24 +13,24 @@ from pybricks.robotics import DriveBase
 robot = Robot()
 command_queue = Command_Queue("Main Command Queue")
 
-def Colorspam(robot):
-    while True:
-        color = robot.ultrasonic_sensor.distance()
-        print(color)
+# def Colorspam(robot):
+#     while True:
+#         color = robot.ultrasonic_sensor.distance()
+#         print(color)
 
 def main():
     # initialize command queue
-    command_queue.append(Command_Lambda(Colorspam))
-    # command_queue.append(Command_Line_Following(lambda: robot.touch_sensor.pressed(), "Follow standard line until the front touch sensor is pressed."))
-    # command_queue.append(Command_Halt())
-    # command_queue.append(Command_Lift())
-    # command_queue.append(Command_Lambda(lambda: print("this is an example lambda command"), name="Print example text."))
-    # nested_command_queue = Command_Queue("Nested Command Queue")
-    # nested_command_queue.append(Command_Lambda(lambda: print("this is an example of a nested command queue"), name="Print example of nested command queue."))
-    # command_queue.append(nested_command_queue)
+    # command_queue.append(Command_Lambda(Colorspam))
+    command_queue.append(Command_Line_Following(lambda: robot.touch_sensor.pressed() or robot.ultrasonic_sensor.distance() < 275, "Follow standard line until the front touch sensor is pressed."))
+    command_queue.append(Command_Halt())
+    command_queue.append(Command_Lift())
+    command_queue.append(Command_Lambda(lambda: print("this is an example lambda command"), name="Print example text."))
+    nested_command_queue = Command_Queue("Nested Command Queue")
+    nested_command_queue.append(Command_Lambda(lambda: print("this is an example of a nested command queue"), name="Print example of nested command queue."))
+    command_queue.append(nested_command_queue)
 
     # print the command queue as a tree
-    # command_queue.tree()
+    command_queue.tree()
 
     # run the command queue
     command_queue.run(robot)
