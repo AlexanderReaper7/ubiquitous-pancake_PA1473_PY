@@ -89,6 +89,7 @@ class Command_Lift(Command_Base):
                 robot.lift_motor.run_target(-1*self.speed, 50, then=Stop.HOLD, wait=True)
             else:
                 print ("Fail to pick up an elevated item")
+        
 
 
             

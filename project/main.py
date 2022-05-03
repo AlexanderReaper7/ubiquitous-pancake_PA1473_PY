@@ -15,8 +15,8 @@ command_queue = Command_Queue("Main Command Queue")
 
 # def Colorspam(robot):
 #     while True:
-#         color = robot.light_sensor.reflection()
-#         print(color)
+#         color = robot.light_sensor.color()
+#         print (color)
 
 def main():
     # initialize command queue
