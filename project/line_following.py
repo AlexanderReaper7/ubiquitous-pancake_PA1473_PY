@@ -61,6 +61,7 @@ class Command_exit_circle_at_color(Command_Base):
         self.gain = gain
     
     def run(self, robot):
+#TODO: modify reflectivity of inner by the color detection of inner, exit when target color is detected
         # Calculate the light threshold. Choose values based on your measurements.
         threshold = (self.inside + self.outside) / 2
 
