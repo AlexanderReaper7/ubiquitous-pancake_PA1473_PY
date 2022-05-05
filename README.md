@@ -1,18 +1,16 @@
-# -- Replace with the name of your project --
+# Group 7
 
 ## Members of the group
--- Replace with student information --
 * Alexander Öberg <alob20@student.bth.se>
-* 
-* 
-* 
+* Viktor Moberg
+* Elias Lindh
+* Ludvig Pernetun
 
 ## Project Description
--- Place a short description of the project so that the reader know what the goal of the repository is --
+This project intends to program an ev3 based robot that navigates a warehouse like enviroment.
 
 ## User stories
 -- Extend the list with user stories. Also use the marking method for complete and incomplete user stories --
 
 - [ ] This is a user story the is incomplete
 - [X] This is a user story that is complete
-- jag programeplfpaelfdsa
