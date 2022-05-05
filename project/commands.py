@@ -77,7 +77,7 @@ class Command_Lift(Command_Base):
         elif robot.light_sensor.reflection() > 95:
             print ("Fail to pick up an item")
         else:
-            robot.lift_motor.run_target(self.speed, 37, then=Stop.HOLD, wait = True)
+            robot.lift_motor.run_target(self.speed, 33, then=Stop.HOLD, wait = True)
             while robot.touch_sensor.pressed() == False and loops < 12:
                 robot.drivebase.straight(10)
                 loops += 1
