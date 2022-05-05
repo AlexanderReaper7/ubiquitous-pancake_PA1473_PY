@@ -10,6 +10,13 @@ from pybricks.parameters import Port, Direction
 from pybricks.tools import wait
 from pybricks.robotics import DriveBase
 
+#TODO: Calibrate ambient light
+#TODO: Calibrate lift starting angle
+#TODO: test the from_rgb func in environment 
+#TODO: Write the idea in environment
+#TODO: investigate ssh connection to robot for CLI interaction at runtime 
+#TODO: Detect collision with other robot or obstacle 
+
 robot = Robot()
 command_queue = Command_Queue("Main Command Queue")
 
