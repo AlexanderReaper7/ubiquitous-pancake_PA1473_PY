@@ -83,16 +83,16 @@ class Env_Color(Enum):
                 return 0
         raise ValueError("invalid color")
 
-    def from_rgb_distance(red, green, blue):
-        """
-        returns the identity of color by the smallest distance from enviroment colors
-        """
-        p1 = np.array([red, green, blue])
-        min = np.inf
-        min_index = None
-        for i, color in enumerate(_NP_COLORS):
-            d = np.linalg.norm(p1 - color)
-            if d < min:
-                min = d
-                min_index = i
-        return Env_Color(min_index)
+def from_rgb(red, green, blue):
+    """
+    returns the identity of color by the smallest distance from enviroment colors
+    """
+    p1 = np.array([red, green, blue])
+    min = np.inf
+    min_index = None
+    for i, color in enumerate(_NP_COLORS):
+        d = np.linalg.norm(p1 - color)
+        if d < min:
+            min = d
+            min_index = i
+    return Env_Color(min_index)

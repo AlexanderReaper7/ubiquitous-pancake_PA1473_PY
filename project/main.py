@@ -1,6 +1,7 @@
 #!/usr/bin/env pybricks-micropython
 import sys
 import __init__
+import enviroment
 from commands import *
 from line_following import Command_Line_Following
 from robot import Robot
@@ -13,14 +14,14 @@ from pybricks.robotics import DriveBase
 robot = Robot()
 command_queue = Command_Queue("Main Command Queue")
 
-# def Colorspam(robot):
-#     while True:
-#         color = robot.light_sensor.color()
-#         print (color)
+def test_fn(robot):
+    while robot.touch_sensor.pressed() == False:
+        r, g, b = robot.light_sensor.color()
+        print(f"color readout: {color_readout}, mapped color: {enviroment.from_rgb(color_readout)}")
 
 def main():
     # initialize command queue
-    # command_queue.append(Command_Lambda(Colorspam))
+    command_queue.append(Command_Lambda(test_fn, name="Test the from_rgb function untill the touch sensor is pressed"))
     command_queue.append(Command_Line_Following(lambda: robot.touch_sensor.pressed() or robot.ultrasonic_sensor.distance() < 275 or robot.light_sensor.reflection() > 95, "Follow standard line until the front touch sensor is pressed."))
     command_queue.append(Command_Halt())
     command_queue.append(Command_Lift())
