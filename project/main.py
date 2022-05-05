@@ -17,21 +17,26 @@ command_queue = Command_Queue("Main Command Queue")
 def test_fn(robot):
     while robot.touch_sensor.pressed() == False:
         r, g, b = robot.light_sensor.color()
-        print(f"color readout: {color_readout}, mapped color: {enviroment.from_rgb(color_readout)}")
+        robot.print(f"color readout: {color_readout}, mapped color: {enviroment.from_rgb(color_readout)}")
+
+CALIBRATE = False
 
 def main():
     # initialize command queue
+    if CALIBRATE:
+        calibration_queue = Command_Queue("Calibrate the motors and sensors")
+        calibration_queue.append(Command_Calibrate_Lift_Angle())
+        calibration_queue.append(Command_Calibrate_Ambient_Light())
+        command_queue.append(calibration_queue)
+    
     command_queue.append(Command_Lambda(test_fn, name="Test the from_rgb function untill the touch sensor is pressed"))
     command_queue.append(Command_Line_Following(lambda: robot.touch_sensor.pressed() or robot.ultrasonic_sensor.distance() < 275 or robot.light_sensor.reflection() > 95, "Follow standard line until the front touch sensor is pressed."))
     command_queue.append(Command_Halt())
     command_queue.append(Command_Lift())
     command_queue.append(Command_Lambda(lambda: print("this is an example lambda command"), name="Print example text."))
-    nested_command_queue = Command_Queue("Nested Command Queue")
-    nested_command_queue.append(Command_Lambda(lambda: print("this is an example of a nested command queue"), name="Print example of nested command queue."))
-    command_queue.append(nested_command_queue)
 
     # print the command queue as a tree
-    command_queue.tree()
+    robot.print(command_queue.tree_str())
 
     # run the command queue
     command_queue.run(robot)

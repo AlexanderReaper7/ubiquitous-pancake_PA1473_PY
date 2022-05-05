@@ -36,9 +36,6 @@ class Command_Line_Following(Command_Base):
             # Calculate the turn rate.
             turn_rate = self.gain * deviation
 
-            # Set status
-            #self.status = f"deviation: {deviation}, turn_rate: {turn_rate}"
-
             # Set the drive base speed and turn rate.
             robot.drivebase.drive(self.speed, turn_rate)
 
@@ -73,9 +70,6 @@ class Command_exit_circle_at_color(Command_Base):
 
             # Calculate the turn rate.
             turn_rate = self.gain * deviation
-
-            # Set status
-            #self.status = f"deviation: {deviation}, turn_rate: {turn_rate}"
 
             # Set the drive base speed and turn rate.
             robot.drivebase.drive(self.speed, turn_rate)

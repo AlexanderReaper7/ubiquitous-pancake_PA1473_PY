@@ -31,12 +31,21 @@ class Command_Queue(deque):
             self.popleft().run(robot)
 
     def tree(self, indent=0):
-        # print(f"{"\t" * indent}{self.name}")
+        print("\t" * (indent) + self.name + ": ")
         for command in self:
             if isinstance(command, Command_Queue):
                 command.tree(indent=indent+1)
             else:
                 print("\t" * (indent + 1) + str(command))
+
+    def tree_str(self, indent=0):
+        output = "\t" * (indent) + self.name + ": \n"
+        for command in self:
+            if isinstance(command, Command_Queue):
+                output += command.tree_str(indent=indent+1)
+            else:
+                output += "\t" * (indent + 1) + str(command) + "\n"
+        return output
 
 class Command_Halt(Command_Base):
     """
@@ -75,7 +84,7 @@ class Command_Lift(Command_Base):
             # robot.drivebase.straight(100)
             # robot.lift_motor.run_until_stalled(-1*self.speed, then=Stop.HOLD, duty_limit=self.duty_limit)
         elif robot.light_sensor.reflection() > 95:
-            print ("Fail to pick up an item")
+            robot.print("Fail to pick up an item")
         else:
             robot.lift_motor.run_target(self.speed, 37, then=Stop.HOLD, wait = True)
             while robot.touch_sensor.pressed() == False and loops < 12:
@@ -88,13 +97,42 @@ class Command_Lift(Command_Base):
                 robot.drivebase.straight(-200)
                 robot.lift_motor.run_target(-1*self.speed, 50, then=Stop.HOLD, wait=True)
             else:
-                print ("Fail to pick up an elevated item")
+                robot.print("Fail to pick up an elevated item")
         
 
 class Calibrate_Lift_Angle(Command_Base):
-   def run(robot):
-      robot.reset_angle(0)
+    """
+    calibrate the lift motor angles
+    """
 
-      while robot.
-            
+    def __init__(self, name="Lift Calibration"):
+        super().__init__(name=name)
+    
+    def run(self, robot):
+        robot.lift_motor.stop()
+        robot.print("Lower the lift to the lowest position and press center button")
+        robot.wait_for_buttons(Buttons.CENTER)
+        robot.lift_motor.reset_angle(0)
+        # robot.print("Raise the lift to the highest position and press center button")
+        # robot.wait_for_buttons(Buttons.CENTER)
+        robot.lift_motor.run_until_stalled(50, then=Stop.HOLD, duty_limit=100)
+        wait(300)
+        robot.LIFT_MAX_ANGLE = robot.lift_motor.angle()
+        robot.print(f"Calibration complete with {robot.LIFT_MAX_ANGLE} degrees")
+
+
+class Calibrate_Ambient_Light(Command_Base):
+    """
+    calibrate the ambient light value
+    """
+
+    def __init__(self, name="Ambient light Calibration"):
+        super().__init__(name=name)
+    
+    def run(self, robot):
+        robot.print("Place the light sensor on white and press center button")
+        robot.wait_for_buttons(Buttons.CENTER)
+        robot.AMBIENT_LIGHT = robot.light_sensor.ambient()
+        robot.print(f"Calibration complete with {robot.AMBIENT_LIGHT}%")
+
 
