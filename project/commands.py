@@ -91,6 +91,10 @@ class Command_Lift(Command_Base):
                 print ("Fail to pick up an elevated item")
         
 
+class Calibrate_Lift_Angle(Command_Base):
+   def run(robot):
+      robot.reset_angle(0)
 
+      while robot.
             
 
