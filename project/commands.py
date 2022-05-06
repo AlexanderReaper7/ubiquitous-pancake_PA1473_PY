@@ -1,24 +1,26 @@
 #!/usr/bin/env pybricks-micropython
 from collections import deque
-from robot import Robot
-from pybricks.parameters import Stop
+
+from pybricks.parameters import Stop, Button
 from pybricks.tools import wait
 
-class Command_Base:
+from project.robot import Robot
+import project.enviroment as env
+
+class Base:
     """
     a unifying interface for all commands
     """
     def __init__(self, name="Command_Base"):
         self.name = name
-        self.status = "N/A"
 
-    def run(self, robot):
+    def run(self, robot: Robot):
         pass
 
     def __str__(self):
         return self.name
 
-class Command_Queue(deque):
+class Queue(deque):
     """
     a first-in first-out queue of commands
     """
@@ -26,14 +28,14 @@ class Command_Queue(deque):
         super().__init__()
         self.name = name
 
-    def run(self, robot):
+    def run(self, robot: Robot):
         while len(self) > 0:
             self.popleft().run(robot)
 
     def tree(self, indent=0):
         print("\t" * (indent) + self.name + ": ")
         for command in self:
-            if isinstance(command, Command_Queue):
+            if isinstance(command, Queue):
                 command.tree(indent=indent+1)
             else:
                 print("\t" * (indent + 1) + str(command))
@@ -41,40 +43,40 @@ class Command_Queue(deque):
     def tree_str(self, indent=0):
         output = "\t" * (indent) + self.name + ": \n"
         for command in self:
-            if isinstance(command, Command_Queue):
+            if isinstance(command, Queue):
                 output += command.tree_str(indent=indent+1)
             else:
                 output += "\t" * (indent + 1) + str(command) + "\n"
         return output
 
-class Command_Halt(Command_Base):
+class Halt(Base):
     """
     stops the robot
     """
     def __init__(self, name="Command_Halt"):
         super().__init__(name=name)
 
-    def run(self, robot):
+    def run(self, robot: Robot):
         robot.drivebase.stop()
 
-class Command_Lambda(Command_Base):
+class Lambda(Base):
     """
     a command that runs a lambda function
     """
-    def __init__(self, fn: function, name="Lambda"):
+    def __init__(self, fn, name="Lambda"):
         super().__init__(name=name)
         self.fn = fn
 
-    def run(self, robot):
+    def run(self, robot: Robot):
         self.fn(robot)
 
-class Command_Lift(Command_Base):
+class Lift(Base):
     def __init__(self, name="Lift", speed = 50, duty_limit = 100):
         super().__init__(name=name)
         self.speed = speed
         self.duty_limit = duty_limit
     
-    def run(self, robot):
+    def run(self, robot: Robot):
         loops = 0
         if robot.touch_sensor.pressed() == True:
             robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, duty_limit=self.duty_limit)
@@ -100,7 +102,7 @@ class Command_Lift(Command_Base):
                 robot.print("Fail to pick up an elevated item")
         
 
-class Calibrate_Lift_Angle(Command_Base):
+class CalibrateLiftAngle(Base):
     """
     calibrate the lift motor angles
     """
@@ -108,10 +110,10 @@ class Calibrate_Lift_Angle(Command_Base):
     def __init__(self, name="Lift Calibration"):
         super().__init__(name=name)
     
-    def run(self, robot):
+    def run(self, robot: Robot):
         robot.lift_motor.stop()
         robot.print("Lower the lift to the lowest position and press center button")
-        robot.wait_for_buttons(Buttons.CENTER)
+        robot.wait_for_buttons(Button.CENTER)
         robot.lift_motor.reset_angle(0)
         # robot.print("Raise the lift to the highest position and press center button")
         # robot.wait_for_buttons(Buttons.CENTER)
@@ -121,7 +123,7 @@ class Calibrate_Lift_Angle(Command_Base):
         robot.print(f"Calibration complete with {robot.LIFT_MAX_ANGLE} degrees")
 
 
-class Calibrate_Ambient_Light(Command_Base):
+class CalibrateAmbientLight(Base):
     """
     calibrate the ambient light value
     """
@@ -129,10 +131,82 @@ class Calibrate_Ambient_Light(Command_Base):
     def __init__(self, name="Ambient light Calibration"):
         super().__init__(name=name)
     
-    def run(self, robot):
+    def run(self, robot: Robot):
         robot.print("Place the light sensor on white and press center button")
-        robot.wait_for_buttons(Buttons.CENTER)
+        robot.wait_for_buttons(Button.CENTER)
         robot.AMBIENT_LIGHT = robot.light_sensor.ambient()
         robot.print(f"Calibration complete with {robot.AMBIENT_LIGHT}%")
 
+class FollowLine(Base):
+    """
+    follows a line of specified color
+    """
+    def __init__(self, end_fn, name="Line Follow", inside=9, outside=85, speed=100, gain=0.7):
+        """
+        Paramaters:
+        end_fn: function that returns True if the command should end
+        name: name of the command
+        inside: % of luminosity inside the line
+        outside: % of luminosity outside the line
+        speed: driving speed of the robot in mm/s
+        gain: gain of the line following controller in degrees per % of deviation from the threshold
+        """
+        self.end_fn = end_fn
+        self.name = name
+        self.inside = inside
+        self.outside = outside
+        self.speed = speed
+        self.gain = gain
+    
+    def run(self, robot: Robot):
+        # Calculate the light threshold. Choose values based on your measurements.
+        threshold = (self.inside + self.outside) / 2
 
+        # Start following the line until the end_fn returns True.
+        while self.end_fn() == False:
+
+            # Calculate the deviation from the threshold.
+            deviation = robot.light_sensor.reflection() - threshold
+
+            # Calculate the turn rate.
+            turn_rate = self.gain * deviation
+
+            # Set the drive base speed and turn rate.
+            robot.drivebase.drive(self.speed, turn_rate)
+
+class ExitCircleAtColor(Base):
+    """
+    drives to a specified color in the circle in the enviroment
+    """
+    def __init__(self, color, name="Go to Color", speed=100, gain=1.7):
+        """
+        follow the central circle line until encontering the specified color and stop.
+        Paramaters:
+        color: color to go to
+        name: name of the command
+        speed: driving speed of the robot in mm/s
+        gain: gain of the line following controller in degrees per % of deviation from the threshold
+        """
+        self.color = color
+        self.name = name
+        self.speed = speed
+        self.gain = gain
+
+    def run(self, robot: Robot):
+        #TODO: modify reflectivity of inner by the color detection of inner, exit when target color is detected
+        inside = env.EnvColor.BLACK
+        outside = env.EnvColor.WHITE.get_reflectivity()
+        while True:
+            readout = robot.light_sensor.rgb()
+            read_color = env.from_rgb(readout)
+            if read_color == self.color:
+                break
+            threshold = (inside.get_reflectivity + outside) / 2
+            # Calculate the deviation from the threshold.
+            deviation = robot.light_sensor.reflection() - threshold
+
+            # Calculate the turn rate.
+            turn_rate = self.gain * deviation
+
+            # Set the drive base speed and turn rate.
+            robot.drivebase.drive(self.speed, turn_rate)

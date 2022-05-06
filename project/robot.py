@@ -1,6 +1,7 @@
+from pybricks.ev3devices import (ColorSensor, Motor, TouchSensor,
+                                 UltrasonicSensor)
 from pybricks.hubs import EV3Brick
-from pybricks.ev3devices import Motor, ColorSensor, TouchSensor, UltrasonicSensor
-from pybricks.parameters import Port, Direction, Button
+from pybricks.parameters import Direction, Port, Button
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
 
@@ -21,7 +22,7 @@ class Robot:
         self.left_motor = Motor(Port.C, positive_direction = Direction.COUNTERCLOCKWISE, gears = [12, 20] )
         self.right_motor = Motor(Port.B, positive_direction = Direction.COUNTERCLOCKWISE, gears = [12, 20])
         self.drivebase = DriveBase(self.left_motor, self.right_motor, wheel_diameter= 47, axle_track= 128)
-        self.brick = ev3 = EV3Brick()
+        self.brick = EV3Brick()
 
         # constants/params
         self.LIFT_MAX_ANGLE = None
@@ -33,10 +34,9 @@ class Robot:
         print(text)
         self.brick.screen.print(text)
 
-    def wait_for_button(self, button):
+    def wait_for_button(self, button: Button):
         """
         wait for the user to press the button
         """
         while button not in self.brick.buttons.pressed():
             wait(10)
-    
