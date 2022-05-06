@@ -1,3 +1,4 @@
+#! pylint: disable=line-too-long
 from pybricks.ev3devices import (ColorSensor, Motor, TouchSensor,
                                  UltrasonicSensor)
 from pybricks.hubs import EV3Brick
@@ -5,7 +6,7 @@ from pybricks.parameters import Direction, Port, Button
 from pybricks.robotics import DriveBase
 from pybricks.tools import wait
 
-
+#pylint: disable=too-many-instance-attributes
 class Robot:
     """
     contains the initailised components and paramaters of the robot
@@ -25,7 +26,7 @@ class Robot:
         self.brick = EV3Brick()
 
         # constants/params
-        self.LIFT_MAX_ANGLE = None
+        self.lift_max_angle = None
 
     def print(self, text):
         """

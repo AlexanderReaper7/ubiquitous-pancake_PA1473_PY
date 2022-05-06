@@ -1,4 +1,7 @@
 #!/usr/bin/env pybricks-micropython
+#! pylint: disable=line-too-long
+#! pylint: disable=too-few-public-methods
+
 from collections import deque
 
 from pybricks.parameters import Stop, Button
@@ -9,30 +12,34 @@ import project.enviroment as env
 
 class Base:
     """
-    a unifying interface for all commands
+    A unifying interface for all commands
     """
     def __init__(self, name="Command_Base"):
         self.name = name
 
     def run(self, robot: Robot):
-        pass
+        """run the command"""
+        raise NotImplementedError
 
     def __str__(self):
+        """return the name of the command"""
         return self.name
 
 class Queue(deque):
     """
-    a first-in first-out queue of commands
+    A first-in first-out queue of commands
     """
     def __init__(self, name="Command_Queue"):
         super().__init__()
         self.name = name
 
     def run(self, robot: Robot):
+        """Runs the commands in order removing them from the queue"""
         while len(self) > 0:
             self.popleft().run(robot)
 
     def tree(self, indent=0):
+        """prints the command queue as a tree"""
         print("\t" * (indent) + self.name + ": ")
         for command in self:
             if isinstance(command, Queue):
@@ -41,6 +48,7 @@ class Queue(deque):
                 print("\t" * (indent + 1) + str(command))
 
     def tree_str(self, indent=0):
+        """returns the command queue as a tree"""
         output = "\t" * (indent) + self.name + ": \n"
         for command in self:
             if isinstance(command, Queue):
@@ -61,24 +69,25 @@ class Halt(Base):
 
 class Lambda(Base):
     """
-    a command that runs a lambda function
+    A command that runs a lambda function
     """
     def __init__(self, fn, name="Lambda"):
         super().__init__(name=name)
+        # pylint: disable=invalid-name
         self.fn = fn
 
     def run(self, robot: Robot):
         self.fn(robot)
 
-class Lift(Base):
+class Lift(Base): #TODO: add doc string
     def __init__(self, name="Lift", speed = 50, duty_limit = 100):
         super().__init__(name=name)
         self.speed = speed
         self.duty_limit = duty_limit
-    
+
     def run(self, robot: Robot):
         loops = 0
-        if robot.touch_sensor.pressed() == True:
+        if robot.touch_sensor.pressed():
             robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, duty_limit=self.duty_limit)
             wait(100)
             robot.drivebase.straight(-200)
@@ -89,18 +98,17 @@ class Lift(Base):
             robot.print("Fail to pick up an item")
         else:
             robot.lift_motor.run_target(self.speed, 37, then=Stop.HOLD, wait = True)
-            while robot.touch_sensor.pressed() == False and loops < 12:
+            while not robot.touch_sensor.pressed() and loops < 12:
                 robot.drivebase.straight(10)
                 loops += 1
             robot.drivebase.stop()
-            if robot.touch_sensor.pressed() == True:
+            if robot.touch_sensor.pressed():
                 robot.lift_motor.run_until_stalled(self.speed, then=Stop.HOLD, duty_limit=self.duty_limit)
                 wait(100)
                 robot.drivebase.straight(-200)
                 robot.lift_motor.run_target(-1*self.speed, 50, then=Stop.HOLD, wait=True)
             else:
                 robot.print("Fail to pick up an elevated item")
-        
 
 class CalibrateLiftAngle(Base):
     """
@@ -109,7 +117,7 @@ class CalibrateLiftAngle(Base):
 
     def __init__(self, name="Lift Calibration"):
         super().__init__(name=name)
-    
+
     def run(self, robot: Robot):
         robot.lift_motor.stop()
         robot.print("Lower the lift to the lowest position and press center button")
@@ -119,8 +127,8 @@ class CalibrateLiftAngle(Base):
         # robot.wait_for_buttons(Buttons.CENTER)
         robot.lift_motor.run_until_stalled(50, then=Stop.HOLD, duty_limit=100)
         wait(300)
-        robot.LIFT_MAX_ANGLE = robot.lift_motor.angle()
-        robot.print(f"Calibration complete with {robot.LIFT_MAX_ANGLE} degrees")
+        robot.lift_max_angle = robot.lift_motor.angle()
+        robot.print(f"Calibration complete with {robot.lift_max_angle} degrees")
 
 
 class CalibrateAmbientLight(Base):
@@ -130,7 +138,7 @@ class CalibrateAmbientLight(Base):
 
     def __init__(self, name="Ambient light Calibration"):
         super().__init__(name=name)
-    
+
     def run(self, robot: Robot):
         robot.print("Place the light sensor on white and press center button")
         robot.wait_for_buttons(Button.CENTER)
@@ -151,19 +159,19 @@ class FollowLine(Base):
         speed: driving speed of the robot in mm/s
         gain: gain of the line following controller in degrees per % of deviation from the threshold
         """
+        super().__init__(name=name)
         self.end_fn = end_fn
-        self.name = name
         self.inside = inside
         self.outside = outside
         self.speed = speed
         self.gain = gain
-    
+
     def run(self, robot: Robot):
         # Calculate the light threshold. Choose values based on your measurements.
         threshold = (self.inside + self.outside) / 2
 
         # Start following the line until the end_fn returns True.
-        while self.end_fn() == False:
+        while not self.end_fn():
 
             # Calculate the deviation from the threshold.
             deviation = robot.light_sensor.reflection() - threshold
@@ -187,8 +195,8 @@ class ExitCircleAtColor(Base):
         speed: driving speed of the robot in mm/s
         gain: gain of the line following controller in degrees per % of deviation from the threshold
         """
+        super().__init__(name=name)
         self.color = color
-        self.name = name
         self.speed = speed
         self.gain = gain
 

@@ -88,6 +88,7 @@ def from_rgb(color):
     """
     returns the identity of color by the smallest distance from enviroment colors
     """
+    # pylint: disable=invalid-name
     r, g, b = color
     p1 = np.array([r, g, b])
     minimum = np.inf
