@@ -1,4 +1,7 @@
 #! pylint: disable=line-too-long
+
+"""Contains the Robot class for the purpose of organising components and functions that are highly cohesive with the hardware."""
+
 from pybricks.ev3devices import (ColorSensor, Motor, TouchSensor,
                                  UltrasonicSensor)
 from pybricks.hubs import EV3Brick

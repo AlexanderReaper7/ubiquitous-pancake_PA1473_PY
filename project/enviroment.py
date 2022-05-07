@@ -1,3 +1,5 @@
+"""module for enviroment constants and functions"""
+
 from enum import Enum
 
 import numpy as np
@@ -28,6 +30,7 @@ REFLECT_BROWN = 19
 REFLECT_BLUE = 12
 REFLECT_GREEN = 12
 REFLECT_WHITE = 79
+
 
 class EnvColor(Enum):
     """
@@ -99,3 +102,5 @@ def from_rgb(color):
             minimum = distance
             min_index = i
     return EnvColor(min_index)
+
+OUTSIDE_COLORS = [EnvColor.WHITE, EnvColor.BLACK]

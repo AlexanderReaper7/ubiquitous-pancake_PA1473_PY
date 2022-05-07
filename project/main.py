@@ -1,6 +1,8 @@
 #!/usr/bin/env pybricks-micropython
 #! pylint: disable=line-too-long
 
+"""The robot's main program."""
+
 import sys
 
 import project.commands as command
@@ -8,6 +10,7 @@ import project.enviroment as env
 from project.robot import Robot
 
 CALIBRATE = False
+"""should the robot execute the calibration commands?"""
 
 # pylint: disable=missing-docstring
 def test_fn(robot):
