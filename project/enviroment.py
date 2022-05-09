@@ -1,4 +1,7 @@
+"""module for enviroment constants and functions"""
+
 from enum import Enum
+
 import numpy as np
 
 # Enviroment colors in % of rgb
@@ -10,7 +13,7 @@ GREEN = (9, 38, 21)
 WHITE = (70, 89, 100)
 
 # TODO: stop using magic numbers
-# for internal use 
+# for internal use
 _NP_PINK = np.array(PINK)
 _NP_PURPLE = np.array(PURPLE)
 _NP_BROWN = np.array(BROWN)
@@ -28,7 +31,8 @@ REFLECT_BLUE = 12
 REFLECT_GREEN = 12
 REFLECT_WHITE = 79
 
-class Env_Color(Enum):
+
+class EnvColor(Enum):
     """
     Enumeration of the colors in the environment
     """
@@ -83,16 +87,20 @@ class Env_Color(Enum):
                 return 0
         raise ValueError("invalid color")
 
-    def from_rgb_distance(red, green, blue):
-        """
-        returns the identity of color by the smallest distance from enviroment colors
-        """
-        p1 = np.array([red, green, blue])
-        min = np.inf
-        min_index = None
-        for i, color in enumerate(_NP_COLORS):
-            d = np.linalg.norm(p1 - color)
-            if d < min:
-                min = d
-                min_index = i
-        return Env_Color(min_index)
+def from_rgb(color):
+    """
+    returns the identity of color by the smallest distance from enviroment colors
+    """
+    # pylint: disable=invalid-name
+    r, g, b = color
+    p1 = np.array([r, g, b])
+    minimum = np.inf
+    min_index = None
+    for i, color in enumerate(_NP_COLORS):
+        distance = np.linalg.norm(p1 - color)
+        if distance < minimum:
+            minimum = distance
+            min_index = i
+    return EnvColor(min_index)
+
+OUTSIDE_COLORS = [EnvColor.WHITE, EnvColor.BLACK]
