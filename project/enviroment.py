@@ -1,27 +1,14 @@
 """module for enviroment constants and functions"""
 
-from enum import Enum
-
-import numpy as np
-
 # Enviroment colors in % of rgb
+
 PINK = (53, 24, 43)
 PURPLE = (12, 12, 44)
 BROWN = (15, 18, 13)
 BLUE = (11, 30, 52)
 GREEN = (9, 38, 21)
 WHITE = (70, 89, 100)
-
-# TODO: stop using magic numbers
-# for internal use
-_NP_PINK = np.array(PINK)
-_NP_PURPLE = np.array(PURPLE)
-_NP_BROWN = np.array(BROWN)
-_NP_BLUE = np.array(BLUE)
-_NP_GREEN = np.array(GREEN)
-_NP_WHITE = np.array(WHITE)
-# NOTE: do not change the order of the colors
-_NP_COLORS = [_NP_PINK, _NP_PURPLE, _NP_BROWN, _NP_BLUE, _NP_GREEN, _NP_WHITE]
+BLACK = (0, 0, 0)
 
 # Enviroment reflectivity in %
 REFLECT_PINK = 59
@@ -30,77 +17,78 @@ REFLECT_BROWN = 19
 REFLECT_BLUE = 12
 REFLECT_GREEN = 12
 REFLECT_WHITE = 79
+REFLECT_BLACK = 0
 
+# NOTE: do not change the order of the colors, must be in the same order as _NP_COLORS
+color_dict = {
+"PINK": (REFLECT_PINK, PINK),
+"PURLE": (REFLECT_PURPLE, PURPLE),
+"BROWN": (REFLECT_BROWN, BROWN),
+"BLUE": (REFLECT_BLUE, BLUE),
+"GREEN": (REFLECT_GREEN, GREEN),
+"WHITE": (REFLECT_WHITE, WHITE),
+"BLACK": (REFLECT_BLACK, BLACK),
+}
+"""Enumeration of the colors in the environment"""
+rgb_list = [PINK, PURPLE, BROWN, BLUE, GREEN, WHITE, BLACK]
+reflection_list = [REFLECT_PINK, REFLECT_PURPLE, REFLECT_BROWN, REFLECT_BLUE, REFLECT_GREEN, REFLECT_WHITE, REFLECT_BLACK]
 
-class EnvColor(Enum):
+def get_rgb(self):
     """
-    Enumeration of the colors in the environment
+    returns the rgb value of the color
     """
-    # NOTE: do not change the order of the colors, must be in the same order as _NP_COLORS
-    PINK = 0
-    PURLE = 1
-    BROWN = 2
-    BLUE = 3
-    GREEN = 4
-    WHITE = 5
-    BLACK = 6
+    return color_dict.get(self)[0]
 
-    def get_rgb(self):
-        """
-        returns the rgb value of the color
-        """
-        match self:
-            case self.PINK:
-                return PINK
-            case self.GREEN:
-                return GREEN
-            case self.BROWN:
-                return BROWN
-            case self.PURLE:
-                return PURPLE
-            case self.BLUE:
-                return BLUE
-            case self.WHITE:
-                return WHITE
-            case self.BLACK:
-                return (0, 0, 0)
-        raise ValueError("invalid color")
+def get_reflectivity(self):
+    """
+    returns the reflectivity of the color
+    """
+    return color_dict.get(self)[1]
 
-    def get_reflectivity(self):
-        """
-        returns the reflectivity of the color
-        """
-        match self:
-            case self.PINK:
-                return REFLECT_PINK
-            case self.GREEN:
-                return REFLECT_GREEN
-            case self.BROWN:
-                return REFLECT_BROWN
-            case self.PURLE:
-                return REFLECT_PURPLE
-            case self.BLUE:
-                return REFLECT_BLUE
-            case self.WHITE:
-                return REFLECT_WHITE
-            case self.BLACK:
-                return 0
-        raise ValueError("invalid color")
+def linalg_norm(self):
+    """
+    returns the linalg norm of the color without using numpy
+    """
+    r, g, b = self
+    return (r**2 + g**2 + b**2)**0.5
+
+def hsv_likeness(self, other):
+    """
+    returns the hsv likeness of the color
+    """
+    return (abs(self.h - other.h) + abs(self.s - other.s) + abs(self.v - other.v)) / 3
+
+def from_hsv(color):
+    """
+    returns the identity of color by the smallest distance from enviroment colors
+    """
+    minimum = float("inf")
+    min_index = None
+    for i, other_color in enumerate(rgb_list):
+        distance = hsv_likeness(color, other_color)
+        if distance < minimum:
+            minimum = distance
+            min_index = i
+    return color_dict.keys()[min_index]
+
+def rgb_likeness(self, other):
+    """
+    returns the rgb likeness of the color
+    """
+    return (abs(self[0] - other[0]) + abs(self[1] - other[1]) + abs(self[2] - other[2])) / 3
 
 def from_rgb(color):
     """
     returns the identity of color by the smallest distance from enviroment colors
     """
     # pylint: disable=invalid-name
-    r, g, b = color
-    p1 = np.array([r, g, b])
-    minimum = np.inf
+    minimum = float("inf")
     min_index = None
-    for i, color in enumerate(_NP_COLORS):
-        distance = np.linalg.norm(p1 - color)
+    for i, other in enumerate(rgb_list):
+        distance = rgb_likeness(color, other)
         if distance < minimum:
             minimum = distance
             min_index = i
-    return EnvColor(min_index)
+    return color_dict.keys()[min_index]
 
-OUTSIDE_COLORS = [EnvColor.WHITE, EnvColor.BLACK]
+OUTSIDE_COLORS = ["WHITE", "BLACK"]

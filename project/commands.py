@@ -9,8 +9,8 @@ from collections import deque
 from pybricks.parameters import Stop, Button
 from pybricks.tools import wait
 
-from project.robot import Robot
-import project.enviroment as env
+from robot import Robot
+import enviroment as env
 
 class Base:
     """
@@ -131,7 +131,7 @@ class CalibrateLiftAngle(Base):
         robot.lift_motor.run_until_stalled(50, then=Stop.HOLD, duty_limit=100)
         wait(300)
         robot.lift_max_angle = robot.lift_motor.angle()
-        robot.print(f"Calibration complete with {robot.lift_max_angle} degrees")
+        #robot.print(f"Calibration complete with {robot.lift_max_angle} degrees")
 
 
 class CalibrateAmbientLight(Base):
@@ -146,7 +146,7 @@ class CalibrateAmbientLight(Base):
         robot.print("Place the light sensor on white and press center button")
         robot.wait_for_buttons(Button.CENTER)
         robot.AMBIENT_LIGHT = robot.light_sensor.ambient()
-        robot.print(f"Calibration complete with {robot.AMBIENT_LIGHT}%")
+        #robot.print(f"Calibration complete with {robot.AMBIENT_LIGHT}%")
 
 class FollowLine(Base):
     """
@@ -204,8 +204,8 @@ class ExitCircleAtColor(Base):
         self.gain = gain
 
     def run(self, robot: Robot):
-        inside = env.EnvColor.BLACK
-        outside = env.EnvColor.WHITE
+        inside = "BLACK"
+        outside = "WHITE"
         # start following the line until the "color" is detected
         while True:
             readout = robot.light_sensor.rgb()
@@ -216,7 +216,7 @@ class ExitCircleAtColor(Base):
             if read_color is not inside and not outside:
                 inside = read_color
 
-            threshold = (inside.get_reflectivity() + outside.get_reflectivity()) / 2
+            threshold = (env.get_reflectivity(inside) + env.get_reflectivity(outside)) / 2
             # Calculate the deviation from the threshold.
             deviation = robot.light_sensor.reflection() - threshold
             # Calculate the turn rate.
@@ -228,7 +228,7 @@ class AutoFollowLine(Base):
     """
     follows a line of any color even when the color changes (other than the outside colors)
     """
-    def __init__(self, end_fn, name="Auto Line Follow", initial_inside=env.EnvColor.PURLE, initial_outside=env.EnvColor.WHITE, speed=100, gain=0.7):
+    def __init__(self, end_fn, name="Auto Line Follow", initial_inside="PURPLE", initial_outside="WHITE", speed=100, gain=0.7):
         """
         Paramaters:
         end_fn: function that returns True if the command should end
@@ -246,8 +246,8 @@ class AutoFollowLine(Base):
         self.initial_outside = initial_outside
 
     def run(self, robot: Robot):
-        inside = env.EnvColor.BLACK
-        outside = env.EnvColor.WHITE
+        inside = self.initial_inside
+        outside = self.initial_outside
         # start following the line until the "color" is detected
         while not self.end_fn():
             readout = robot.light_sensor.rgb()
@@ -257,7 +257,7 @@ class AutoFollowLine(Base):
                 inside = read_color
             if read_color is not inside and read_color in env.OUTSIDE_COLORS:
                 outside = read_color
-            threshold = (inside.get_reflectivity() + outside) / 2
+            threshold = (env.get_reflectivity(inside) + env.get_reflectivity(outside)) / 2
             # Calculate the deviation from the threshold.
             deviation = robot.light_sensor.reflection() - threshold
             # Calculate the turn rate.

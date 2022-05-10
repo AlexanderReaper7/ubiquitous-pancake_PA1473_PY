@@ -5,18 +5,18 @@
 
 import sys
 
-import project.commands as command
-import project.enviroment as env
-from project.robot import Robot
+import commands as command
+import enviroment as env
+from robot import Robot
 
 CALIBRATE = False
 """should the robot execute the calibration commands?"""
 
 # pylint: disable=missing-docstring
-def test_fn(robot):
+def test_fn(robot: Robot):
     while not robot.touch_sensor.pressed():
-        color_readout = robot.light_sensor.color()
-        robot.print(f"color readout: {color_readout}, mapped color: {env.from_rgb(color_readout)}")
+        color_readout = robot.light_sensor.rgb()
+        robot.print("color readout: " + ", mapped color: " + env.from_rgb(color_readout))
 
 def main():
     robot = Robot()
