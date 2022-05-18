@@ -4,19 +4,19 @@
 """The robot's main program."""
 
 import sys
-
 import commands as command
 import enviroment as env
 from robot import Robot
+from pybricks.tools import wait
 
 CALIBRATE = False
 """should the robot execute the calibration commands?"""
 
 # pylint: disable=missing-docstring
 def test_fn(robot: Robot):
-    while not robot.touch_sensor.pressed():
-        color_readout = robot.light_sensor.rgb()
-        robot.print("color readout: " + ", mapped color: " + env.from_rgb(color_readout))
+    robot.print("first")
+    wait(1000)
+    robot.print("end")
 
 def main():
     robot = Robot()
@@ -28,11 +28,13 @@ def main():
         calibration_queue.append(command.CalibrateAmbientLight())
         command_queue.append(calibration_queue)
 
-    command_queue.append(command.Lambda(test_fn, name="Test the from_rgb function untill the touch sensor is pressed"))
-    command_queue.append(command.FollowLine(lambda: robot.touch_sensor.pressed() or robot.ultrasonic_sensor.distance() < 275 or robot.light_sensor.reflection() > 95, "Follow standard line until the front touch sensor is pressed."))
-    command_queue.append(command.Halt())
-    command_queue.append(command.Lift())
-    command_queue.append(command.Lambda(lambda: print("this is an example lambda command"), name="Print example text."))
+    # command_queue.append(command.Lambda(test_fn, name="Test the from_rgb function untill the touch sensor is pressed"))
+    # command_queue.append(command.Lambda(lambda: robot.print("this is an example lambda command"), name="Print example text."))
+    # command_queue.append(command.Lambda(test_fn, name="test"))
+    command_queue.append(command.ExitSpecifiedAreaInASafeManner())
+    # command_queue.append(command.FollowLineWhileAvoidingCollision(lambda: robot.touch_sensor.pressed(), "Follow standard line until the front touch sensor is pressed."))
+    # command_queue.append(command.Halt())
+    # command_queue.append(command.Lift())
 
     # print the command queue as a tree
     robot.print(command_queue.tree_str())

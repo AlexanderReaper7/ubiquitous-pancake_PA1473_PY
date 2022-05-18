@@ -71,24 +71,24 @@ def from_hsv(color):
             min_index = i
     return color_dict.keys()[min_index]
 
-def rgb_likeness(self, other):
+def rgb_likeness(this, other):
     """
     returns the rgb likeness of the color
     """
-    return (abs(self[0] - other[0]) + abs(self[1] - other[1]) + abs(self[2] - other[2])) / 3
+    return (abs(this[0] - other[0]) + abs(this[1] - other[1]) + abs(this[2] - other[2])) / 3
 
-def from_rgb(color):
-    """
-    returns the identity of color by the smallest distance from enviroment colors
-    """
-    # pylint: disable=invalid-name
-    minimum = float("inf")
-    min_index = None
-    for i, other in enumerate(rgb_list):
-        distance = rgb_likeness(color, other)
-        if distance < minimum:
-            minimum = distance
-            min_index = i
-    return color_dict.keys()[min_index]
+# def from_rgb(color):
+#     """
+#     returns the identity of color by the smallest distance from enviroment colors
+#     """
+#     # pylint: disable=invalid-name
+#     minimum = float("inf")
+#     min_index = None
+#     for i, other in enumerate(rgb_list):
+#         distance = rgb_likeness(color, other)
+#         if distance < minimum:
+#             minimum = distance
+#             min_index = i
+#     return color_dict.keys()[min_index].copy()
 
 OUTSIDE_COLORS = ["WHITE", "BLACK"]
